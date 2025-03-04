@@ -3,47 +3,45 @@
       <div class="form-container">
         <h2>Registro</h2>
         <p class="message">Llena los campos y únete a nuestra comunidad.</p>
-        <form @submit.prevent="registerUser">
-          <input v-model="nombre" type="text" placeholder="Nombre" required />
-          <input v-model="tipo_Documento" type="text" placeholder="Tipo Documento" required />
-          <input v-model="documento" type="text" placeholder="Documento" required />
-          <input v-model="correo" type="email" placeholder="Correo electrónico" required />
+        <form @submit.prevent="registerUser">   <!-- el formulario usa @submit.prevent="registerUser" para evitar que la pagina se recargue y ejecutar la funcion de registro-->
+          <input v-model="nombre" type="text" placeholder="Nombre" class="input">
+          <input v-model="tipo_Documento" type="text" placeholder="Tipo Documento" class="input">
+          <input v-model="documento" type="text" placeholder="Documento" class="input">
+          <input v-model="correo" type="email" placeholder="Correo electrónico (opcional)" class="input">
           <button type="submit">Registrarme</button>
         </form>
-        <p class="login-link">¿Ya tienes cuenta? <router-link to="/login">Inicia sesión aquí</router-link></p>
+        <p class="login-link">¿Ya tienes cuenta? <router-link to="/login">Inicia sesión aquí</router-link></p> <!--link para cuando el usuario ya tiene una cuenta registrada-->
       </div>
     </div>
   </template>
   
   <script>
-  import axios from 'axios';
+  
+  import api from '@/services/api';
   import Swal from 'sweetalert2';
   
   export default {
     data() {
-      return {
-        nombre: '',
-        tipo_Documento: '',
-        documento: '',
-        correo: ''
-      };
+        return {
+            nombre: '',
+            tipo_Documento: '',
+            documento: '',
+            correo: ''
+        };
     },
+
     methods: {
       async registerUser() {
         try {
-          const response = await axios.post('http://127.0.0.1:8001/api/register', {
-              nombre: this.nombre,
-              tipo_Documento: this.tipo_Documento,
-              documento: this.documento,
-              correo: this.correo || null
-          }, {
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Accept': 'application/json'
-              }
+          const response = await api.post('http://127.0.0.1:8001/api/users', {
+            nombre: this.nombre,
+            tipo_Documento: this.tipo_Documento,
+            documento: this.documento,
+            correo: this.correo || null
           });
-          
+
           if (response.data.success) {
+            const username = response.data.user.name; 
             Swal.fire({
               icon: "success",
               title: "¡Registro exitoso!",
@@ -51,8 +49,10 @@
               confirmButtonText: "OK",
               confirmButtonColor: "#2d8f4e"
             });
-            this.$router.push("/login");
-          } else {
+            //this.$router.push("/login");
+            this.$router.push(`/welcome/${username}`); // Obtén el nombre desde la respuesta del backend
+          } 
+          else {   
             Swal.fire({
               icon: "error",
               title: "Error",
@@ -61,16 +61,18 @@
               confirmButtonColor: "#d33"
             });
           }
-        } catch (error) {
-          console.error('Error:', error);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Hubo un error al registrar el usuario.",
-            confirmButtonText: "Intentar de nuevo",
-            confirmButtonColor: "#d33"
-          });
-        }
+
+          } catch (error) {
+                console.error(" Error al registrar usuario: ", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: " Hubo un error al registrar el usuario ",
+                    confirmButtonText: " Intentar de nuevo ",
+                    confirmButtonColor: "#d33"
+                });
+            }
+
       }
     }
   };
@@ -154,3 +156,4 @@
   }
   </style>
   
+

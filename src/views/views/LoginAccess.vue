@@ -4,56 +4,65 @@
       <h2>Login</h2>
       <form @submit.prevent="loginUser">
         <input v-model="nombre" type="text" placeholder="Nombre" required />
-        <input v-model="documento" type="text" placeholder="Documento" required />
+        <input
+          v-model="documento" type="text" placeholder="Documento" required/>
         <button type="submit">Iniciar Sesión</button>
       </form>
-      <p class="register-link">¿No tienes cuenta? <router-link to="/register">Regístrate aquí</router-link></p>
+      <p class="register-link">
+        ¿No tienes cuenta?
+        <router-link to="/register">Regístrate aquí</router-link>
+      </p>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import Swal from 'sweetalert2';
+import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   data() {
     return {
       nombre: '',
-      documento: ''
+      documento: '',
     };
   },
   methods: {
     async loginUser() {
       try {
-        const response = await axios.post('http://127.0.0.1:8001/api/login', {
+        const response = await axios.post("http://127.0.0.1:8001/api/users", {
           nombre: this.nombre,
-          documento: this.documento
+          documento: this.documento,
         });
-        
+
         if (response.data.success) {
-          this.$router.push("/home");
-        } else {
+          const username = response.data.user.name; // Asegúrate de que el backend envíe el nombre
+          this.$router.push(`/welcome/${username}`);
+        } 
+
+        else {
           Swal.fire({
             icon: "error",
             title: "Error",
             text: "Credenciales incorrectas.",
             confirmButtonText: "Intentar de nuevo",
-            confirmButtonColor: "#d33"
+            confirmButtonColor: "#d33",
           });
         }
-      } catch (error) {
+      } 
+      
+      catch (error) {
         console.error('Error:', error);
         Swal.fire({
           icon: "error",
           title: "Oops...",
           text: "Hubo un error al iniciar sesión.",
           confirmButtonText: "Intentar de nuevo",
-          confirmButtonColor: "#d33"
+          confirmButtonColor: "#d33",
         });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -78,7 +87,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('@/assets/images/cultivasena.png') no-repeat center center;
+  background: url("@/assets/images/cultivasena.png") no-repeat center center;
   background-size: cover;
   filter: blur(var(--blur-amount, 15px));
   z-index: -1;
