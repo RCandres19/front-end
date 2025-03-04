@@ -29,7 +29,6 @@
             correo: ''
         };
     },
-
     methods: {
       async registerUser() {
         try {
@@ -77,6 +76,7 @@
     }
   };
   </script>
+  
   
   <style>
   :root {

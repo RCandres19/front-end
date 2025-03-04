@@ -4,21 +4,18 @@
       <h2>Login</h2>
       <form @submit.prevent="loginUser">
         <input v-model="nombre" type="text" placeholder="Nombre" required />
-        <input
-          v-model="documento" type="text" placeholder="Documento" required/>
+        <input v-model="documento" type="text" placeholder="Documento" required/>
         <button type="submit">Iniciar Sesión</button>
       </form>
-      <p class="register-link">
-        ¿No tienes cuenta?
-        <router-link to="/register">Regístrate aquí</router-link>
-      </p>
+      <p class="register-link"> ¿No tienes cuenta? <router-link to="/register">Regístrate aquí</router-link></p>
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+//import axios from "axios";
 import Swal from "sweetalert2";
+import api from '@/services/api';
 
 export default {
   data() {
@@ -30,7 +27,7 @@ export default {
   methods: {
     async loginUser() {
       try {
-        const response = await axios.post("http://127.0.0.1:8001/api/users", {
+        const response = await api.post("http://127.0.0.1:8000/api/users", {
           nombre: this.nombre,
           documento: this.documento,
         });
