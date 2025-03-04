@@ -4,44 +4,53 @@
       <h2>Login</h2>
       <form @submit.prevent="loginUser">
         <input v-model="nombre" type="text" placeholder="Nombre" required />
-        <input v-model="tipoDocumento" type="text" placeholder="Tipo Documento" required />
         <input v-model="documento" type="text" placeholder="Documento" required />
-        <input v-model="correo" type="email" placeholder="Correo (opcional)" />
         <button type="submit">Iniciar Sesión</button>
       </form>
+      <p class="register-link">¿No tienes cuenta? <router-link to="/register">Regístrate aquí</router-link></p>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
     return {
       nombre: '',
-      tipoDocumento: '',
-      documento: '',
-      correo: ''
+      documento: ''
     };
   },
   methods: {
     async loginUser() {
       try {
-        const response = await axios.post('http://localhost:8000/api/users', {
+        const response = await axios.post('http://127.0.0.1:8001/api/login', {
           nombre: this.nombre,
-          tipoDocumento: this.tipoDocumento,
-          documento: this.documento,
-          correo: this.correo || null, // Si el email está vacío, enviamos null
+          documento: this.documento
         });
         
         if (response.data.success) {
-          this.$router.push(`/dashboard/${response.data.user.id}`);
+          this.$router.push("/home");
         } else {
-          alert('Error al iniciar sesión');
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Credenciales incorrectas.",
+            confirmButtonText: "Intentar de nuevo",
+            confirmButtonColor: "#d33"
+          });
         }
       } catch (error) {
         console.error('Error:', error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Hubo un error al iniciar sesión.",
+          confirmButtonText: "Intentar de nuevo",
+          confirmButtonColor: "#d33"
+        });
       }
     }
   }
@@ -107,5 +116,21 @@ button {
 
 button:hover {
   background-color: #239713;
+}
+
+.register-link {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #000;
+}
+
+.register-link a {
+  color: #239713;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
 }
 </style>
